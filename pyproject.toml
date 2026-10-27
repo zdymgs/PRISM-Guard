@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prism-har"
+version = "0.1.0"
+description = "PRISM: protocol-relational targets for compact activity recognition"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = ["numpy==2.4.4", "scipy==1.17.1", "scikit-learn==1.8.0", "pandas==3.0.2", "PyYAML==6.0.2", "threadpoolctl==3.6.0"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+student = ["torch==2.9.1", "torchvision==0.24.1"]
+baselines = ["torch==2.9.1", "torchvision==0.24.1"]
+analysis = ["matplotlib==3.11.1"]
+teachers = ["torch==2.9.1", "torchvision==0.24.1", "opencv-python==4.13.0.92", "Pillow==10.4.0", "transformers==5.8.1", "huggingface-hub==1.15.0", "safetensors==0.7.0", "joblib==1.6.0", "psutil==7.2.2"]
+competition = ["torch==2.9.1", "torchvision==0.24.1", "opencv-python==4.13.0.92", "Pillow==10.4.0", "ultralytics==8.4.33", "transformers==5.8.1", "huggingface-hub==1.15.0", "safetensors==0.7.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+include = ["prism*", "experiments*", "competition*"]
+
+[tool.ruff]
+line-length = 100
+exclude = ["prism/core", "prism/student/native"]
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.black]
+line-length = 100

@@ -1,0 +1,1 @@
+"""Native student model components."""

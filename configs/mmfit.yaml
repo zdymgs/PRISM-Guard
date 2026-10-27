@@ -1,0 +1,48 @@
+data_root: ../private-data
+cache_root: ../private-cache
+output_root: ../prism-output
+eta: 0.0005
+bootstrap_repetitions: 2000
+bootstrap_seed: 20261015
+random_peer_seeds:
+- 2026101501
+- 2026101502
+- 2026101503
+- 2026101504
+- 2026101505
+dataset: MM-Fit
+classes: 11
+seed: 20260927
+direct_weights:
+- 0
+- 0.25
+- 0
+- 0.25
+- 0
+- 0.5
+emission_scale: 0.2
+transition_lambda: 0.1
+transition_smoothing: 1.0
+gap_seconds: 1.5
+DG_margin: 0.95
+DS_gate_threshold: 0.4
+# Read-only defaults from prism/core/workout_peers.py: bout_repeat_peers.
+bout_peers:
+  threshold: 0.85
+  min_gap: 10.0
+  max_gap: 600.0
+  max_bouts: 8
+# Read-only defaults from prism/core/workout.py: RepeatConfig.
+repeat_kernel_defaults:
+  min_gap_seconds: 10.0
+  max_gap_seconds: 600.0
+  top_k: 3
+  similarity_threshold: 0.0
+  mutual: false
+  peer_weight: 0.5
+# Read-only defaults from prism/core/workout.py: SequenceConfig.
+sequence_kernel_defaults:
+  gap_seconds: 1.5
+  transition_weight: 0.45
+  emission_scale: 1.0
+  path_mix: 0.51

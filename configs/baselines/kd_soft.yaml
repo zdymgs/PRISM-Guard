@@ -1,0 +1,13 @@
+optimizer: AdamW
+weight_decay: 0.02
+batch_size: 64
+epochs: 40
+temperature: 1
+motion_fusion_lr: 0.0001
+visual_head_lr: 5.0e-05
+minimum_lr: 5.0e-06
+scope: heads_motion_encoder
+cuhkx_precision: AMP_float16
+other_precision: float32
+target: DIRECT_content_teacher_soft_posterior
+loss: forward_KL_no_smoothing

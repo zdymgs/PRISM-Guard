@@ -1,0 +1,12 @@
+schema_version: 1
+internal_solution: "challenge compact dual-physical-sequence Student raw"
+primary_verification_target: true
+model_artifact: "${PRISM_COMPETITION_BUNDLE}"
+runtime_entry: "competition/student/runtime.py"
+batch_size: 4
+device: "auto"
+checkpoint_storage_precision: "FP16 tensors; loaded into FP32 PyTorch modules"
+runtime_random_seed: null
+runtime_consumes_this_file: false
+notes: "The frozen runtime defaults above are implemented in src/challenge/runtime.py; this file records the exact mapping used for the challenge deployment."
+

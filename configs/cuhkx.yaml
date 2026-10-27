@@ -1,0 +1,58 @@
+data_root: ../private-data
+cache_root: ../private-cache
+output_root: ../prism-output
+eta: 0.0005
+bootstrap_repetitions: 2000
+bootstrap_seed: 20261015
+random_peer_seeds:
+- 2026101501
+- 2026101502
+- 2026101503
+- 2026101504
+- 2026101505
+dataset: CUHK-X
+classes: 40
+stacker_C: 0.03
+peer_sample_weight: 2
+emission_alpha: 0.65
+transition_lambda: 0.45
+transition_smoothing: 0.25
+trigram_backoff: 1.0
+beam_width: 50
+session_gap_seconds: 30
+seed: 20260826
+native_candidate_paths:
+- direct
+- group
+- sequence
+- direct_sequence
+- direct_sequence_nogate
+- online_forward
+# Read-only stacker default from prism/core/content.py: stack_fit; C is above.
+stacker_random_state: 20260912
+
+# Read-only frozen graph defaults from prism/_chains/repeats.py.
+repeat_graph:
+  maximum_session_rank_distance: 2
+  maximum_start_gap_seconds: 300.0
+  minimum_probability_similarity: 0.75
+  minimum_path_overlap: 0.20
+  minimum_length_ratio: 0.80
+  consensus_weight: 0.50
+  alignment_gap_penalty: 0.20
+  maximum_group_size: 3
+  vote_smoothing: 0.00001
+# Read-only grid from prism/core/thresholds.py: choose_threshold.
+group_gate_grid:
+  start: -0.10
+  stop: 0.90
+  count: 201
+  disagreement_quantiles: [0.1, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95]
+  disabled_threshold: 2.0
+# Read-only grid from prism/core/sequence_thresholds.py: select_gate.
+sequence_gate_grid:
+  start: -1.0
+  stop: 1.0
+  count: 401
+  disagreement_quantiles: [0.1, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95]
+  disabled_threshold: 2.0

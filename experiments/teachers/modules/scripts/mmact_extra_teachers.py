@@ -73,10 +73,10 @@ def native_predict(model, loader, device, limit=0):
             idx.append(b['global_index'])
     return (torch.cat(sk).numpy(), torch.cat(imu).numpy(), torch.cat(avs).numpy(), torch.cat(avi).numpy(), torch.cat(idx).numpy())
 
-def trainmodules(cache, fit_indices, fit_ids, fit_labels, val_indices, val_ids, val_labels, normalizer, out, device, epochs, pilot_batches, seed, stop_file):
+def train_extra_teacher(cache, fit_indices, fit_ids, fit_labels, val_indices, val_ids, val_labels, normalizer, out, device, epochs, pilot_batches, seed, stop_file):
     torch.manual_seed(seed)
     np.random.seed(seed)
-    model = buildmodules_model().to(device)
+    model = build_extra_model().to(device)
     recipe = native_recipe()
     counts = np.bincount(fit_labels, minlength=37).astype(np.float32)
     weight = 1 / np.power(np.maximum(counts, 1), 0.35)
@@ -103,7 +103,7 @@ def trainmodules(cache, fit_indices, fit_ids, fit_labels, val_indices, val_ids, 
             y = b['label'].to(device)
             opt.zero_grad(set_to_none=True)
             outputs = model(motion, mask_ratio=0.0)
-            loss, parts = ce_onlymodules_loss(outputs, y, b['skeleton_available'].to(device), b['imu_available'].to(device), weight)
+            loss, parts = ce_only_loss(outputs, y, b['skeleton_available'].to(device), b['imu_available'].to(device), weight)
             if not torch.isfinite(loss):
                 raise FloatingPointError('native nonfinite loss')
             loss.backward()
@@ -233,9 +233,9 @@ def main():
             else:
                 norm_fit = fit[:128] if a.pilot else fit
                 norm_fit_ids = np.asarray([source_id_by_index[int(i)] for i in norm_fit])
-                norm = fitmodules_normalizer(a.cache, norm_fit, norm_fit_ids)
+                norm = fit_extra_normalizer(a.cache, norm_fit, norm_fit_ids)
                 epochs = 1 if a.pilot else 24
-                model, saved = trainmodules(a.cache, fit, np.asarray([source_id_by_index[int(i)] for i in fit]), global_y[fit], val_idx, val_ids, val_y, norm, a.output / f'{stem}.pt', device, epochs, 2 if a.pilot else 0, 20260922, stop_file)
+                model, saved = train_extra_teacher(a.cache, fit, np.asarray([source_id_by_index[int(i)] for i in fit]), global_y[fit], val_idx, val_ids, val_y, norm, a.output / f'{stem}.pt', device, epochs, 2 if a.pilot else 0, 20260922, stop_file)
                 targets = pred if fit_name != 'final_source' else np.r_[val_idx, tgt_idx]
                 target_ids = np.asarray([source_id_by_index[int(i)] for i in targets]) if fit_name != 'final_source' else np.r_[val_ids, tgt_ids]
                 ds = NativeMotionDataset(a.cache, targets, target_ids, np.zeros(len(targets), np.int64), norm)
@@ -303,7 +303,7 @@ def main():
         if not np.allclose(sums[avail], 1, atol=1e-05) or not np.all(sums[~avail] == 0):
             raise AssertionError('available probabilities must sum one; unavailable must be zero')
     np.savez_compressed(a.output / 'extra_bank.npz', **arrays, names=np.asarray(FAMILIES))
-    manifest = {'status': 'complete', 'schema': 'MMACT_EXTRA_TEACHERS_V1', 'names': list(FAMILIES), 'shape': {k: list(v.shape) for k, v in arrays.items() if 'probabilities' in k}, 'f0_labels_read': False, 'f0_metrics_computed': False, 'ce_onlymodules': True, 'receipts': receipts, 'extra_bank_sha256': sha(a.output / 'extra_bank.npz'), 'elapsed_seconds': time.perf_counter() - started}
+    manifest = {'status': 'complete', 'schema': 'MMACT_EXTRA_TEACHERS_V1', 'names': list(FAMILIES), 'shape': {k: list(v.shape) for k, v in arrays.items() if 'probabilities' in k}, 'f0_labels_read': False, 'f0_metrics_computed': False, 'ce_only': True, 'receipts': receipts, 'extra_bank_sha256': sha(a.output / 'extra_bank.npz'), 'elapsed_seconds': time.perf_counter() - started}
     atomic_json(a.output / 'manifest.json', manifest)
     atomic_json(a.output / 'status.json', {'status': 'complete', 'full_bank_written': True, 'f0_labels_read': False})
     print(json.dumps({k: manifest[k] for k in ('status', 'shape', 'elapsed_seconds')}, indent=2))

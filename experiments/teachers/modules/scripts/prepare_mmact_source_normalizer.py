@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 import numpy as np
 ROOT = WORK_ROOT
-from session_kd.mmact_cache_dataset import assemblemodules_part_grid_from_raw, sha256_file
+from session_kd.mmact_cache_dataset import assemble_part_grid_from_raw, sha256_file
 from session_kd.mmact_imu import fit_channel_normalizer
 
 def main():
@@ -37,7 +37,7 @@ def main():
         with np.load(path, allow_pickle=False) as data:
             if int(data['global_interval_index'].item()) != int(i) or str(data['interval_id'].item()) != rows[i]['interval_id']:
                 raise ValueError(f'identity mismatch: {path}')
-            grid, mask, schema = assemblemodules_part_grid_from_raw(data['imu_raw_phone_watch'], data['imu_channel_mask'])
+            grid, mask, schema = assemble_part_grid_from_raw(data['imu_raw_phone_watch'], data['imu_channel_mask'])
         values[j] = grid[0]
         masks[j] = mask[0]
         ids.append(rows[i]['interval_id'])

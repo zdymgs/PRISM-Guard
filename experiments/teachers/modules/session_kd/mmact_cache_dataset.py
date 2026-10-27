@@ -18,12 +18,12 @@ def native3streams_from_raw(raw: np.ndarray, mask: np.ndarray) -> tuple[np.ndarr
         raise ValueError('raw streams must have shape [2,16,4,9] or [B,2,16,4,9]')
     return ((values[..., 0:3].astype(np.float32, copy=True), values[..., 6:9].astype(np.float32, copy=True), values[..., 3:6].astype(np.float32, copy=True)), (present[..., 0:3].copy(), present[..., 6:9].copy(), present[..., 3:6].copy()))
 
-def assemblemodules_part_grid_from_raw(raw: np.ndarray, mask: np.ndarray):
+def assemble_part_grid_from_raw(raw: np.ndarray, mask: np.ndarray):
     """Adapt a cache sample/batch to the mature native part-grid encoder."""
-    from session_kd.mmact_imu import assemblemodules_part_grid
+    from session_kd.mmact_imu import assemble_part_grid
     values = np.asarray(raw)
     streams, masks = native3streams_from_raw(values, mask)
     if values.ndim == 4:
         streams = tuple((value[None] for value in streams))
         masks = tuple((value[None] for value in masks))
-    return assemblemodules_part_grid(*streams, *masks)
+    return assemble_part_grid(*streams, *masks)

@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import numpy as np
 ROOT = WORK_ROOT
-from session_kd.mmfit_fullroute import EARLY_LATE, skeleton_3d_features, imumodules_grid, DEVICE_MAPPING, REGIONS
+from session_kd.mmfit_fullroute import EARLY_LATE, skeleton_3d_features, imu_grid, DEVICE_MAPPING, REGIONS
 from session_kd.mmfit_strong_benchmark import sha256_file, ordered_id_hash, validate_split_firewall
 
 def main():
@@ -64,7 +64,7 @@ def main():
         xyz[~observed] = np.nan
         samples = [skeleton_3d_features(xyz[w], clock[w] / 30.0) for w in range(2)]
         values = {k: np.stack([r[k] for r in samples]) for k in samples[0]}
-        values.update(imumodules_grid(raw[i], presence[i], mean, std))
+        values.update(imu_grid(raw[i], presence[i], mean, std))
         values['global_time_position'] = (EARLY_LATE / 149.0).astype(np.float32)
         for name, x in values.items():
             if name not in arrays:

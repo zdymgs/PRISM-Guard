@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from huggingface_hub import snapshot_download
 from transformers import VideoMAEForVideoClassification, VideoMAEImageProcessor
-from aligned_multimodal.build_videomae_cache import atomic_npz, encode, restorecore_attention_biases, safe_relative
+from aligned_multimodal.build_videomae_cache import atomic_npz, encode, restore_attention_biases, safe_relative
 from aligned_multimodal.build_videomae_multiclip_cache import CLASSIFIER_CLASSES, HIDDEN_SIZE, VIEW_NAMES, WINDOW_NAMES, prepare_trial
 PROJECT_DIR = WORK_ROOT / 'aligned_multimodal'
 DEFAULT_MANIFEST = PROJECT_DIR / 'data/single_split.csv'
@@ -98,7 +98,7 @@ def main() -> None:
     snapshot = Path(snapshot_download(args.model, allow_patterns=('*.json', '*.safetensors', '*.txt'), local_files_only=True))
     processor = VideoMAEImageProcessor.from_pretrained(snapshot, local_files_only=True)
     model = VideoMAEForVideoClassification.from_pretrained(snapshot, local_files_only=True)
-    bias_report = restorecore_attention_biases(model, snapshot)
+    bias_report = restore_attention_biases(model, snapshot)
     if int(model.config.hidden_size) != HIDDEN_SIZE or int(model.config.num_labels) != CLASSIFIER_CLASSES:
         raise RuntimeError('Large VideoMAE architecture changed')
     device = torch.device(args.device)

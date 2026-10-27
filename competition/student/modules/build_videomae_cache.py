@@ -92,7 +92,7 @@ def atomic_npz(path: Path, **values: np.ndarray) -> None:
     temporary.replace(path)
 
 
-def restorecore_attention_biases(
+def restore_attention_biases(
     model: VideoMAEForVideoClassification, snapshot: Path
 ) -> dict[str, Any]:
     """Map the original split q/v bias tensors into Transformers 5.x modules."""
@@ -329,7 +329,7 @@ def main() -> None:
     model = VideoMAEForVideoClassification.from_pretrained(
         snapshot, local_files_only=True
     )
-    bias_report = restorecore_attention_biases(model, snapshot)
+    bias_report = restore_attention_biases(model, snapshot)
     classifier_classes = int(model.config.num_labels)
     hidden_size = int(model.config.hidden_size)
     device = torch.device(args.device)

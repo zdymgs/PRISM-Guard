@@ -47,7 +47,7 @@ def enumerate_inputs(data_root: Path, workouts: tuple[str, ...]=ALL_WORKOUTS):
             source_labels.append(-1 if intervals is None else _label_at_center_source(center, intervals))
     return (rows, np.asarray(source_labels, dtype=np.int64))
 
-def validatecore_imu_alignment(rows: list[dict[str, object]], segments_path: Path) -> None:
+def validate_imu_alignment(rows: list[dict[str, object]], segments_path: Path) -> None:
     """Prove row-order equality while explicitly excluding label/activity columns."""
     columns = ['segment_id', 'split', 'workout', 'person', 'start_pose_index', 'start_frame', 'center_frame']
     legacy = pd.read_csv(segments_path, usecols=columns)

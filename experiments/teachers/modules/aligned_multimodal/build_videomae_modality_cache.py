@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from aligned_multimodal.audit_yolo11_pose_skeleton import frame_map
 from aligned_multimodal.build_shared_dir_roi_feature_cache import read_depth
-from aligned_multimodal.build_videomae_cache import DEFAULT_ROI, MODEL_NAME, PROJECT_DIR, VIEW_NAMES, atomic_npz, encode, read_rows, restorecore_attention_biases, safe_relative, square_crop, uniform_indices
+from aligned_multimodal.build_videomae_cache import DEFAULT_ROI, MODEL_NAME, PROJECT_DIR, VIEW_NAMES, atomic_npz, encode, read_rows, restore_attention_biases, safe_relative, square_crop, uniform_indices
 
 def thermal_dir(row: dict[str, str]) -> Path:
     source = str(Path(row['ir_dir']).resolve())

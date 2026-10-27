@@ -121,7 +121,7 @@ def test_cuhkx_rich_json_auto_cli_builds_all_six_paths(tmp_path):
 
 
 @pytest.mark.parametrize("dataset,filename,classes", [("MMAct", "mmact.yaml", 37), ("MM-Fit", "mmfit.yaml", 11)])
-def testmodules_selection_cli_accepts_source_selection_and_target(tmp_path, dataset, filename, classes):
+def test_selection_cli_accepts_source_selection_and_target(tmp_path, dataset, filename, classes):
     config = yaml.safe_load((REPOSITORY / "configs" / filename).read_text(encoding="utf-8"))
     count = max(config["direct_expert_indices"]) + 1 if dataset == "MMAct" else 6
     experts = [f"expert-{i}" for i in range(count)]

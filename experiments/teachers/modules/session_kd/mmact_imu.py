@@ -32,7 +32,7 @@ class ChannelNormalizer:
     training_ids: tuple[str, ...]
     channel_names: tuple[str, ...]
 
-def assemblemodules_part_grid(phone_acc: np.ndarray, phone_gyro: np.ndarray, watch_acc: np.ndarray, phone_acc_mask: np.ndarray, phone_gyro_mask: np.ndarray, watch_acc_mask: np.ndarray, *, phone_orientation: np.ndarray | None=None, phone_orientation_mask: np.ndarray | None=None) -> tuple[np.ndarray, np.ndarray, NativeIMUSchema]:
+def assemble_part_grid(phone_acc: np.ndarray, phone_gyro: np.ndarray, watch_acc: np.ndarray, phone_acc_mask: np.ndarray, phone_gyro_mask: np.ndarray, watch_acc_mask: np.ndarray, *, phone_orientation: np.ndarray | None=None, phone_orientation_mask: np.ndarray | None=None) -> tuple[np.ndarray, np.ndarray, NativeIMUSchema]:
     """Place real sensors in a `[B,2,16,5,4,C]` body-part grid."""
     arrays = [np.asarray(value, np.float32) for value in (phone_acc, phone_gyro, watch_acc)]
     masks = [np.asarray(value, bool) for value in (phone_acc_mask, phone_gyro_mask, watch_acc_mask)]

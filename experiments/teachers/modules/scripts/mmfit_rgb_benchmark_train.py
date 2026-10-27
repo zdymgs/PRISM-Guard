@@ -9,7 +9,7 @@ import torch
 from torch.nn import functional as F
 ROOT = WORK_ROOT
 from session_kd.mmfit_rgb_benchmark import *
-from session_kd.mmfit_rgb_benchmark_cache import validate_derived_arrays, validatecore_imu_alignment
+from session_kd.mmfit_rgb_benchmark_cache import validate_derived_arrays, validate_imu_alignment
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -34,7 +34,7 @@ def main() -> None:
         raise ValueError('Frozen split counts changed')
     if not (np.all(labels[test_idx] == -1) and np.all(labels[np.r_[train_idx, val_idx]] >= 0)):
         raise ValueError('Label firewall violated')
-    validatecore_imu_alignment(rows, args.imu_cache / 'segments.csv')
+    validate_imu_alignment(rows, args.imu_cache / 'segments.csv')
     rgb = np.load(args.run_dir / 'rgb_4x512_fp16.npy', mmap_mode='r')
     pose = np.load(args.run_dir / 'pose_51x150_fp16.npy', mmap_mode='r')
     imu = np.load(args.imu_cache / 'teacher_sensor_24x250.npy', mmap_mode='r')

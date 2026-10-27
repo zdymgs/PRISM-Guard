@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from aligned_multimodal.audit_yolo11_pose_skeleton import frame_map
 from aligned_multimodal.build_shared_dir_roi_feature_cache import read_ir
-from aligned_multimodal.build_videomae_cache import VIEW_NAMES, atomic_npz, encode, restorecore_attention_biases, safe_relative, square_crop
+from aligned_multimodal.build_videomae_cache import VIEW_NAMES, atomic_npz, encode, restore_attention_biases, safe_relative, square_crop
 WINDOW_NAMES = ('early', 'late')
 WINDOW_BOUNDS = ((0.0, 0.7), (0.3, 1.0))
 FRAME_COUNT = 16

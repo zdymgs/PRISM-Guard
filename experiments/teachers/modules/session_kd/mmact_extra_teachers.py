@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import Dataset
-from session_kd.mmact_imu import NativeIMUSchema, apply_channel_normalizer, assemblemodules_part_grid, fit_channel_normalizer
+from session_kd.mmact_imu import NativeIMUSchema, apply_channel_normalizer, assemble_part_grid, fit_channel_normalizer
 from session_kd.mmact_motion_pretrain import build_mmact_motion_pretrain
 from session_kd.mmact_skeleton import projected_skeleton_features
 FITS = ('F2', 'F3', 'F4', 'final_source')
@@ -29,7 +29,7 @@ def fit_predict_indices(source_indices: np.ndarray, source_folds: np.ndarray, fi
         raise AssertionError('cross-fit exclusion failed')
     return (fit, predict)
 
-def ce_onlymodules_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor, skeleton_available: torch.Tensor, imu_available: torch.Tensor, class_weight: torch.Tensor) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+def ce_only_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor, skeleton_available: torch.Tensor, imu_available: torch.Tensor, class_weight: torch.Tensor) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
     """Two supervised CE heads only: no KD, alignment, reconstruction or ancestor."""
     losses = {}
     if skeleton_available.any():
@@ -43,9 +43,9 @@ def ce_onlymodules_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor, 
 def raw_imu_grid(archive) -> tuple[np.ndarray, np.ndarray, NativeIMUSchema]:
     value = archive['imu_raw_phone_watch'].astype(np.float32)
     mask = archive['imu_channel_mask'].astype(bool)
-    return assemblemodules_part_grid(value[..., 0:3][None], value[..., 6:9][None], value[..., 3:6][None], mask[..., 0:3][None], mask[..., 6:9][None], mask[..., 3:6][None])
+    return assemble_part_grid(value[..., 0:3][None], value[..., 6:9][None], value[..., 3:6][None], mask[..., 0:3][None], mask[..., 6:9][None], mask[..., 3:6][None])
 
-def fitmodules_normalizer(cache: Path, indices: np.ndarray, interval_ids: np.ndarray):
+def fit_extra_normalizer(cache: Path, indices: np.ndarray, interval_ids: np.ndarray):
     values, masks = ([], [])
     for index in map(int, indices):
         with np.load(cache / f'interval_{index:06d}.npz', allow_pickle=False) as archive:
@@ -95,7 +95,7 @@ class NativeMotionDataset(Dataset):
         motion.update({'imu_bin_statistics': np.zeros((2, 16, 5, 30), np.float32), 'imu_bin_mask': np.zeros((2, 16, 5, 30), bool), 'imu_global_statistics': np.zeros((2, 5, 30), np.float32), 'imu_global_mask': np.zeros((2, 5, 30), bool)})
         return {**{k: torch.from_numpy(v) for k, v in motion.items()}, 'label': torch.tensor(self.labels[position]), 'skeleton_available': torch.tensor(bool(motion['skeleton_joint_mask'].any())), 'imu_available': torch.tensor(bool(valid.any())), 'global_index': torch.tensor(index)}
 
-def buildmodules_model(classes: int=37):
+def build_extra_model(classes: int=37):
     """Always construct from scratch; callers must never load a C0/KD ancestor."""
     model = build_mmact_motion_pretrain(classes=classes)
     model.training_ancestry = 'from_scratch_ce_only'

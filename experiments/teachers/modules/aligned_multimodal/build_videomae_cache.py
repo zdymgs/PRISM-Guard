@@ -49,7 +49,7 @@ def atomic_npz(path: Path, **values: np.ndarray) -> None:
         np.savez_compressed(handle, **values)
     temporary.replace(path)
 
-def restorecore_attention_biases(model: VideoMAEForVideoClassification, snapshot: Path) -> dict[str, Any]:
+def restore_attention_biases(model: VideoMAEForVideoClassification, snapshot: Path) -> dict[str, Any]:
     """Map the original split q/v bias tensors into Transformers 5.x modules."""
     safetensors_path = snapshot / 'model.safetensors'
     pytorch_path = snapshot / 'pytorch_model.bin'

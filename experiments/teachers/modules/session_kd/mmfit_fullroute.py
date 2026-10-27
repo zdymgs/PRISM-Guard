@@ -91,7 +91,7 @@ def skeleton_3d_features(xyz, times):
     rel[~rm] = 0
     return {'skeleton_features': f, 'skeleton_feature_mask': fm, 'skeleton_joint_mask': valid, 'skeleton_relations': rel, 'skeleton_relation_mask': rm, 'skeleton_frame_quality': valid.mean(1).astype(np.float32)}
 
-def imumodules_grid(raw, presence, mean, std):
+def imu_grid(raw, presence, mean, std):
     """Existing audited 24x250 streams -> four devices in five anatomical slots."""
     normalized = (np.asarray(raw, np.float32) - mean) / std
     seq = np.zeros((2, 16, 5, 4, 6), np.float32)

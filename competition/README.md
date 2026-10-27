@@ -24,7 +24,7 @@ From the repository root:
 python -m pip install -e ".[competition]"
 ```
 
-Obtain CUHK-X data from the organizers and prepare deployment weights separately. The runtime expects a trusted `prism-challenge-checkpoint-v1` bundle containing the student state and architecture configuration together with the YOLO11n-pose checkpoint bytes. Set `PRISM_COMPETITION_BUNDLE` to its local location or pass `--bundle` explicitly. The package does not download models during inference.
+Obtain CUHK-X data from the organizers. The verified deployment bundle, `challenge_bundle.pth`, is available as a [release asset](https://github.com/zdymgs/PRISM/releases/tag/v1.0-challenge) for non-commercial research use. The runtime expects a trusted `prism-challenge-checkpoint-v1` bundle containing the student state and architecture configuration together with the YOLO11n-pose checkpoint bytes. Set `PRISM_COMPETITION_BUNDLE` to its local location or pass `--bundle` explicitly. The package does not download models during inference.
 
 The challenge environment used Python 3.12, PyTorch 2.9.1, and torchvision 0.24.1. Frozen package versions are recorded in [environment/requirements-lock.txt](environment/requirements-lock.txt); see [environment/README.md](environment/README.md) for installation notes.
 

@@ -34,7 +34,7 @@ python -m pip install -e ".[test,student,analysis]"
 python -m pytest -q
 ```
 
-从 [CUHK-X](https://openaiotlab.github.io/CUHK-X/)、[MMAct](https://mmact19.github.io/2019/) 和 [MM-Fit](https://mmfit.github.io/) 官方渠道取得数据，并自行准备预训练权重。本仓库不提供数据、缓存、预测和模型权重。数据及生成结果放在源码目录外；格式见 [docs/DATA.md](docs/DATA.md)。
+从 [CUHK-X](https://openaiotlab.github.io/CUHK-X/)、[MMAct](https://mmact19.github.io/2019/) 和 [MM-Fit](https://mmfit.github.io/) 官方渠道取得数据，并自行准备预训练权重。本仓库不提供数据、缓存、预测和模型权重。通过比赛验证的部署权重单独作为 [Release 附件](https://github.com/zdymgs/PRISM/releases/tag/v1.0-challenge) 发布，仅限非商业研究使用。数据及生成结果放在源码目录外；格式见 [docs/DATA.md](docs/DATA.md)。
 
 完整可执行命令见 [英文主页 Usage](README.md#usage)，依次为教师准备、构建目标、蒸馏学生、冻结评测与生成图 3–7。路径可用命令行参数或 `PRISM_DATA_ROOT`、`PRISM_CACHE_ROOT`、`PRISM_OUTPUT_ROOT` 配置。教师代码和比赛预处理分别使用 `.[teachers]`、`.[competition]` 可选依赖。
 

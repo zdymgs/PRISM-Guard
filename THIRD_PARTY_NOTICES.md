@@ -17,7 +17,7 @@ The MIT license in this repository covers PRISM-authored code. Libraries, extern
 | Transformers, Hugging Face Hub, safetensors | Apache-2.0 | [Transformers](https://github.com/huggingface/transformers), [Hub](https://github.com/huggingface/huggingface_hub), [safetensors](https://github.com/huggingface/safetensors) |
 | Ultralytics YOLO11n-pose | AGPL-3.0, or a separate Enterprise license | [LICENSE](https://github.com/ultralytics/ultralytics/blob/main/LICENSE), [licensing](https://www.ultralytics.com/license) |
 
-Challenge inference calls Ultralytics for pose-based input preparation. The repository provides calling code and excludes Ultralytics source copies and all YOLO weights. Use and distribution of a combined application must follow the applicable Ultralytics terms.
+Challenge inference calls Ultralytics for pose-based input preparation. The source tree provides calling code and excludes Ultralytics source copies and YOLO weights. The challenge bundle published as a release asset embeds the YOLO11n-pose checkpoint, which remains under AGPL-3.0. Use and distribution of a combined application must follow the applicable Ultralytics terms.
 
 MC3-18 is called through torchvision. Obtain its Kinetics pretrained weights separately and follow the [official model documentation](https://docs.pytorch.org/vision/0.24/models/generated/torchvision.models.video.mc3_18.html).
 

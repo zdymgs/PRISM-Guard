@@ -45,7 +45,7 @@ Training requires your own dataset files and pretrained weights. See [teacher pr
 
 ## Data preparation
 
-Obtain [CUHK-X](https://openaiotlab.github.io/CUHK-X/), [MMAct](https://mmact19.github.io/2019/) and [MM-Fit](https://mmfit.github.io/) from their official providers under their licenses. This repository contains no datasets, derived caches, predictions or model weights.
+Obtain [CUHK-X](https://openaiotlab.github.io/CUHK-X/), [MMAct](https://mmact19.github.io/2019/) and [MM-Fit](https://mmfit.github.io/) from their official providers under their licenses. This repository contains no datasets, derived caches, predictions or model weights. The verified challenge deployment bundle is published separately as a [release asset](https://github.com/zdymgs/PRISM/releases/tag/v1.0-challenge) for non-commercial research use.
 
 Keep local inputs and generated outputs outside the source directory:
 

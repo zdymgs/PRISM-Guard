@@ -56,3 +56,10 @@ sequence_gate_grid:
   count: 401
   disagreement_quantiles: [0.1, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95]
   disabled_threshold: 2.0
+
+# Documentation only: subject-disjoint outer folds used in the paper.
+outer_folds:
+  0: [3, 4, 9, 20, 22, 24]
+  1: [6, 8, 17, 23]
+  2: [5, 7, 16, 18, 19]
+unused_users: [1, 2, 21]

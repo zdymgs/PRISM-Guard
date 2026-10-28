@@ -40,4 +40,4 @@ Pretrained weights and external backbone source trees are obtained separately. I
 - **MMAct:** [official terms](https://mmact19.github.io/2019/), academic use through the provider; redistribution is prohibited.
 - **MM-Fit:** obtain each modality from the [official project](https://mmfit.github.io/) and follow the terms attached to that release.
 
-This repository distributes code and schematic diagrams only. Dataset files, derived features, posterior banks, predictions and weights are excluded.
+This repository distributes code and schematic diagrams only. Dataset files, derived features, posterior banks and predictions are excluded. The CUHK-X challenge student is distributed separately as the release asset `challenge_bundle.pth` (see `competition/README.md`); it contains no CUHK-X data.

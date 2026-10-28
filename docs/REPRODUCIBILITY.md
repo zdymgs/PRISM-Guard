@@ -19,6 +19,37 @@ Target construction writes a canonical configuration snapshot and SHA256 hashes.
 
 The paired bootstrap implementation in `prism/eval/bootstrap.py` uses the paper's session/workout resampling unit, 2,000 repetitions and seed 20261015. Generated arrays, checkpoints, predictions and figures remain in your output workspace.
 
+## Paper settings
+
+The supplementary material of the paper refers to these keys.
+
+| Setting | File and key | Value |
+|---|---|---|
+| eta | `configs/{cuhkx,mmact,mmfit}.yaml`: `eta` | 0.0005 |
+| stacker_C | `configs/cuhkx.yaml`: `stacker_C`; MMAct / MM-Fit | 0.03; — / — |
+| CUHK-X emission weight | `configs/cuhkx.yaml`: `emission_alpha` | 0.65 |
+| MMAct emission weights | `configs/mmact.yaml`: `direct_sequence_emission_alpha` (D→S), `group_sequence_emission_alpha` (D→G→S) | 1.0; 0.65 |
+| MM-Fit emission weight | `configs/mmfit.yaml`: `emission_scale` | 0.2 |
+| transition_lambda | `configs/{cuhkx,mmact,mmfit}.yaml`: `transition_lambda` | CUHK-X: 0.45; MMAct: 0.45; MM-Fit: 0.1 |
+| beam_width | `configs/cuhkx.yaml`: `beam_width`; MMAct / MM-Fit | 50; — / — |
+| session_gap_seconds | `configs/cuhkx.yaml`: `session_gap_seconds`; MMAct / MM-Fit | 30; — / — |
+| CUHK-X peer similarity threshold | `configs/cuhkx.yaml`: `repeat_graph.minimum_probability_similarity` | 0.75 |
+| MMAct peer similarity threshold | `configs/mmact.yaml`: `match_threshold` | 0.55 |
+| MM-Fit peer similarity threshold | `configs/mmfit.yaml`: `bout_peers.threshold` | 0.85 |
+| Skip cost | `configs/cuhkx.yaml`: `repeat_graph.alignment_gap_penalty`; `configs/mmact.yaml`: `skip_penalty`; MM-Fit | 0.20; 0.20; — |
+| Group gate grid | `configs/cuhkx.yaml`: `group_gate_grid.{start,stop,count}` | -0.10; 0.90; 201 |
+| Sequence gate grid | `configs/cuhkx.yaml`: `sequence_gate_grid.{start,stop,count}` | -1.0; 1.0; 401 |
+| KD-soft optimizer and weight decay | `configs/baselines/kd_soft.yaml`: `optimizer`, `weight_decay` | AdamW; 0.02 |
+| KD-soft learning rates | `configs/baselines/kd_soft.yaml`: `motion_fusion_lr`, `visual_head_lr`, `minimum_lr` | 0.0001; 5.0e-05; 5.0e-06 |
+| KD-soft training | `configs/baselines/kd_soft.yaml`: `batch_size`, `epochs`, `temperature`, `scope` | 64; 40; 1; `heads_motion_encoder` |
+| KD-soft target and loss | `configs/baselines/kd_soft.yaml`: `target`, `loss` | `DIRECT_content_teacher_soft_posterior`; `forward_KL_no_smoothing` |
+| KD-soft precision | `configs/baselines/kd_soft.yaml`: `cuhkx_precision`, `other_precision` | `AMP_float16`; `float32` |
+| Confidence PL threshold | `configs/baselines/conf_pl.yaml`: `confidence_threshold` | 0.9 |
+| Tent optimizer, learning rate and epochs | `configs/baselines/tent.yaml`: `optimizer`, `learning_rate`, `epochs` | Adam; 0.001; 1 |
+| Tent micro batch and logical batch | `configs/baselines/tent.yaml`: `micro_batch`, `logical_accumulation_batch` | 4; 64 |
+| bootstrap_repetitions | `configs/{cuhkx,mmact,mmfit}.yaml`: `bootstrap_repetitions` | 2000 |
+| bootstrap_seed | `configs/{cuhkx,mmact,mmfit}.yaml`: `bootstrap_seed` | 20261015 |
+
 ## Commands
 
 The [home page](../README.md#usage) provides the target, distillation and evaluation commands. Source student stages and the KD-soft, confidence PL and Tent interfaces are documented beside their code. Teacher commands support an explicit local workspace, data root, pretrained root and external backbone root.

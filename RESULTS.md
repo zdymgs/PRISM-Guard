@@ -2,7 +2,7 @@
 
 Values follow the final manuscript. Macro-F1 is reported in percent; gains are percentage points.
 
-## Main comparison — Table 2
+## Main comparison — Table 3
 
 ### Teacher targets
 
@@ -14,7 +14,7 @@ Values follow the final manuscript. Macro-F1 is reported in percent; gains are p
 | Online filtering | 77.4 | 99.0 | 50.5 |
 | PRISM | **80.0** | **99.0** | 94.0 |
 
-Source: paper Table 2(a).
+Source: paper Table 3(a).
 
 ### Deployed students
 
@@ -27,7 +27,7 @@ Source: paper Table 2(a).
 | KD-soft | 74.7 | 87.4 | 94.7 |
 | PRISM-D | **79.9** | **99.0** | 94.0 |
 
-Source: paper Table 2(b). CUHK-X reports one macro-F1 pooled over all three outer folds.
+Source: paper Table 3(b). CUHK-X reports one macro-F1 pooled over all three outer folds.
 
 On MM-Fit, where the clip-level estimate is already saturated, the gate keeps relational targets within 0.6 points of the baseline.
 
@@ -41,7 +41,7 @@ On MM-Fit, where the clip-level estimate is already saturated, the gate keeps re
 
 Source: paper Figure 3 and Section V-A. These are teacher target gains.
 
-## Computational cost — Table 4
+## Computational cost — Table 5
 
 Measurements use one laptop with an RTX 5070 Ti and 32 GB RAM. Offline times exclude expert training and C0 training.
 
@@ -54,4 +54,19 @@ Measurements use one laptop with an RTX 5070 Ti and 32 GB RAM. Offline times exc
 | Selected student | MM-Fit, 11,668 windows | 587 s | — |
 | PRISM-D deployment | Per clip | One forward pass | 23.6M parameters |
 
-Source: paper Table 4. Deployment runs the student only.
+Source: paper Table 5. Deployment runs the student only.
+
+## Decoder sensitivity — Table 4
+
+| Dataset | Constant | Values (final) | Macro-F1 | Range | Lowest Δ vs Direct |
+|---|---|---|---|---|---|
+| CUHK-X | λ | 0.25–0.65 (0.45) | 79.2–80.0 | 0.8 | +4.2 |
+| CUHK-X | Back-off | 0.5–5 (1) | 79.2–79.9 | 0.7 | +4.3 |
+| CUHK-X | Gap (s) | 15–60 (30) | 78.2–80.0 | 1.8 | +3.3 |
+| MMAct | λ | 0.15–0.75 (0.45) | 99.0–99.1 | 0.2 | +11.2 |
+| MMAct | Smoothing | 0.25–2 (1) | 99.0 | <0.1 | +11.2 |
+| MM-Fit | λ | 0.05–0.45 (0.1) | 93.9–94.5 | 0.5 | −0.6 |
+| MM-Fit | Smoothing | 0.25–2 (1) | 94.0 | <0.1 | −0.6 |
+| MM-Fit | Gap (s) | 1–5 (1.5) | 94.0 | 0.0 | −0.6 |
+
+Source: paper Table 4; scripts in [experiments/sensitivity](experiments/sensitivity/README.md).

@@ -10,7 +10,7 @@ PRISM turns data-collection protocols into offline supervision: it aligns repeat
 
 ## Highlights
 
-- PRISM-D improves macro-F1 over the student distilled from Direct targets by **+4.9** on CUHK-X and **+11.2** on MMAct (paper Table 2).
+- PRISM-D improves macro-F1 over the student distilled from Direct targets by **+4.9** on CUHK-X and **+11.2** on MMAct (paper Table 3).
 - CUHK-X Challenge Small Model Track **Finalist Award**, **11th on the private leaderboard (top 15)**.
 - Passed the organizers' independent reproduction and verification; presented a poster at the CUHK-X Challenge Grand Finals at **UbiComp/ISWC 2026**.
 - Challenge deployment model: **56.49 MB**, within the **100 MB** limit.
@@ -107,7 +107,7 @@ These scripts generate Figures 3–7 from your local predictions and aggregate m
 
 ## Main results
 
-Macro-F1 (%), paper Table 2:
+Macro-F1 (%), paper Table 3:
 
 | Level | Method | CUHK-X | MMAct | MM-Fit |
 |---|---|---:|---:|---:|
@@ -118,7 +118,7 @@ Macro-F1 (%), paper Table 2:
 
 On MM-Fit, where the clip-level estimate is already saturated, the gate keeps relational targets within 0.6 points of the baseline.
 
-[RESULTS.md](RESULTS.md) contains the full Table 2 comparison, CUHK-X fold gains from Figure 3, and computational cost from Table 4.
+[RESULTS.md](RESULTS.md) contains the full Table 3 comparison, CUHK-X fold gains from Figure 3, and computational cost from Table 5.
 
 ## Competition
 

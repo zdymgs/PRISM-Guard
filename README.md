@@ -1,16 +1,16 @@
-# PRISM
+# PRISM-Guard
 
 Code for **Use the Protocol Offline, Not at Deployment: Data-Collection Protocols as Relational Privileged Information for Compact Multimodal Activity Recognition**.
 
 **Under review at IEEE Transactions on Mobile Computing.**
 
-PRISM turns data-collection protocols into offline supervision: it aligns repeated sessions, decodes each session under its script, and gates proposed changes. PRISM-D distills these targets into a compact multimodal recognizer that classifies each clip using only its local sensor inputs.
+PRISM-Guard turns data-collection protocols into offline supervision: it aligns repeated sessions, decodes each session under its script, and gates proposed changes. PRISM-Guard-D distills these targets into a compact multimodal recognizer that classifies each clip using only its local sensor inputs.
 
-![PRISM workflow](docs/workflow.svg)
+![PRISM-Guard workflow](docs/workflow.svg)
 
 ## Highlights
 
-- PRISM-D improves macro-F1 over the student distilled from Direct targets by **+4.9** on CUHK-X and **+11.2** on MMAct (paper Table 3).
+- PRISM-Guard-D improves macro-F1 over the student distilled from Direct targets by **+4.9** on CUHK-X and **+11.2** on MMAct (paper Table 3).
 - CUHK-X Challenge Small Model Track **Finalist Award**, **11th on the private leaderboard (top 15)**.
 - Passed the organizers' independent reproduction and verification; presented a poster at the CUHK-X Challenge Grand Finals at **UbiComp/ISWC 2026**.
 - Challenge deployment model: **56.49 MB**, within the **100 MB** limit.
@@ -20,7 +20,7 @@ PRISM turns data-collection protocols into offline supervision: it aligns repeat
 
 | Folder | Contents |
 |---|---|
-| `prism/` | PRISM method (targets, decoding, peers, gates) and PRISM-D |
+| `prism/` | PRISM-Guard method (targets, decoding, peers, gates) and PRISM-Guard-D |
 | `scripts/` + `configs/` | Entry points and per-dataset settings |
 | `experiments/` | Teacher training, students, baselines, ablations and paper figures |
 | `competition/` | CUHK-X challenge submission (inference only) |
@@ -45,7 +45,7 @@ Training requires your own dataset files and pretrained weights. See [teacher pr
 
 ## Data preparation
 
-Obtain [CUHK-X](https://openaiotlab.github.io/CUHK-X/), [MMAct](https://mmact19.github.io/2019/) and [MM-Fit](https://mmfit.github.io/) from their official providers under their licenses. This repository contains no datasets, derived caches, predictions or model weights. The verified challenge deployment bundle is published separately as a [release asset](https://github.com/zdymgs/PRISM/releases/tag/v1.0-challenge) for non-commercial research use.
+Obtain [CUHK-X](https://openaiotlab.github.io/CUHK-X/), [MMAct](https://mmact19.github.io/2019/) and [MM-Fit](https://mmfit.github.io/) from their official providers under their licenses. This repository contains no datasets, derived caches, predictions or model weights. The verified challenge deployment bundle is published separately as a [release asset](https://github.com/zdymgs/PRISM-Guard/releases/tag/v1.0-challenge) for non-commercial research use.
 
 Keep local inputs and generated outputs outside the source directory:
 
@@ -77,7 +77,7 @@ python scripts/build_targets.py --config configs/cuhkx.yaml --path auto --cache-
 
 Use `configs/mmact.yaml` or `configs/mmfit.yaml` for the other datasets. Those protocols also consume a separate `selection.json`. Source/selection labels fit the stacker, transitions and gates; target labels are reserved for evaluation.
 
-### 2. Distill PRISM-D
+### 2. Distill PRISM-Guard-D
 
 ```bash
 python scripts/distill_student.py --dataset cuhkx --fold 0 --inputs ../private-cache/cuhkx/fold0/student_manifest.json --targets ../prism-output/cuhkx/fold0/targets.json --c0 ../private-weights/cuhkx/fold0/c0.pt --output ../prism-output/cuhkx/fold0/student
@@ -112,9 +112,9 @@ Macro-F1 (%), paper Table 3:
 | Level | Method | CUHK-X | MMAct | MM-Fit |
 |---|---|---:|---:|---:|
 | Teacher | Direct | 75.0 | 87.8 | 94.6 |
-| Teacher | PRISM | **80.0** | **99.0** | 94.0 |
+| Teacher | PRISM-Guard | **80.0** | **99.0** | 94.0 |
 | Student | From Direct | 75.0 | 87.8 | 94.6 |
-| Student | PRISM-D | **79.9** | **99.0** | 94.0 |
+| Student | PRISM-Guard-D | **79.9** | **99.0** | 94.0 |
 
 On MM-Fit, where the clip-level estimate is already saturated, the gate keeps relational targets within 0.6 points of the baseline.
 
@@ -122,13 +122,13 @@ On MM-Fit, where the clip-level estimate is already saturated, the gate keeps re
 
 ## Competition
 
-[competition/](competition/README.md) presents the challenge student compact student, input preprocessing and fixed inference procedure, with four schematic diagrams. The challenge submission is an earlier version of PRISM adapted to the challenge data; its configuration differs in detail from the paper.
+[competition/](competition/README.md) presents the challenge student compact student, input preprocessing and fixed inference procedure, with four schematic diagrams. The challenge submission is an earlier version of PRISM-Guard adapted to the challenge data; its configuration differs in detail from the paper.
 
 ## Citation
 
 ```bibtex
 @misc{prism,
-  author = {The PRISM Authors},
+  author = {The PRISM-Guard Authors},
   title = {Use the Protocol Offline, Not at Deployment: Data-Collection Protocols as Relational Privileged Information for Compact Multimodal Activity Recognition},
   note = {Under review at IEEE Transactions on Mobile Computing}
 }
@@ -136,7 +136,7 @@ On MM-Fit, where the clip-level estimate is already saturated, the gate keeps re
 
 ## License
 
-PRISM-authored code is provided under the [MIT License](LICENSE). Third-party components and pretrained models follow their respective licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+PRISM-Guard-authored code is provided under the [MIT License](LICENSE). Third-party components and pretrained models follow their respective licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Acknowledgments
 

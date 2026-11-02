@@ -1,6 +1,6 @@
 # Third-party notices
 
-The MIT license in this repository covers PRISM-authored code. Libraries, external model implementations, pretrained weights and datasets retain their own licenses.
+The MIT license in this repository covers PRISM-Guard-authored code. Libraries, external model implementations, pretrained weights and datasets retain their own licenses.
 
 ## Software dependencies
 

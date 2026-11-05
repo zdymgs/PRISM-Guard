@@ -20,7 +20,6 @@ students:
   cuhkx:
     direct: 75.0
     c0: 54.9
-    tent: 38.1
     conf_pl: 64.6
     kd_soft: 74.7
     selected: 79.9

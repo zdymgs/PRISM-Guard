@@ -1,4 +1,4 @@
-"""Run KD-soft, confidence pseudo-labeling, or the reported CUHK-X Tent."""
+"""Run the KD-soft or confidence pseudo-labeling baseline."""
 
 from pathlib import Path
 import sys

@@ -83,7 +83,7 @@ Use `configs/mmact.yaml` or `configs/mmfit.yaml` for the other datasets. Those p
 python scripts/distill_student.py --dataset cuhkx --fold 0 --inputs ../private-cache/cuhkx/fold0/student_manifest.json --targets ../prism-output/cuhkx/fold0/targets.json --c0 ../private-weights/cuhkx/fold0/c0.pt --output ../prism-output/cuhkx/fold0/student
 ```
 
-Repeat with folds 1 and 2 and their corresponding source models and banks. Use `--dataset mmact` or `--dataset mmfit` for their native students. [Student instructions](experiments/students_cuhkx_3fold/README.md) cover source training and input tensors; [baseline instructions](experiments/baselines/README.md) cover KD-soft, confidence pseudo-labeling and Tent.
+Repeat with folds 1 and 2 and their corresponding source models and banks. Use `--dataset mmact` or `--dataset mmfit` for their native students. [Student instructions](experiments/students_cuhkx_3fold/README.md) cover source training and input tensors; [baseline instructions](experiments/baselines/README.md) cover KD-soft and confidence pseudo-labeling.
 
 ### 3. Evaluate frozen target predictions
 

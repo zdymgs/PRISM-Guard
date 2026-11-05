@@ -127,7 +127,7 @@ def smoke_main(kind):
         )
         print(json.dumps({"scope": "synthetic linear probe", "losses": losses}))
     else:
-        from .baselines.objectives import kd_soft_loss, pl_conf_loss, entropy_loss
+        from .baselines.objectives import kd_soft_loss, pl_conf_loss
 
         x = torch.tensor([[1.0, 0.0], [0.0, 1.0]], requires_grad=True)
         q = torch.tensor([[0.95, 0.05], [0.1, 0.9]])
@@ -139,7 +139,6 @@ def smoke_main(kind):
                     "kd_soft": float(kd_soft_loss(x, q).detach()),
                     "pl_conf": float(ce.detach()),
                     "retained": kept,
-                    "tent_entropy": float(entropy_loss(x).detach()),
                 }
             )
         )

@@ -1,7 +1,6 @@
-"""Label-free objectives and Tent's explicitly limited parameter scope."""
+"""Label-free objectives for the KD-soft and confidence pseudo-labeling baselines."""
 
 import torch
-from torch import nn
 from torch.nn import functional as F
 
 
@@ -32,28 +31,3 @@ def pl_conf_loss(logits, probabilities, threshold=0.9):
     if not count:
         return None, 0
     return F.cross_entropy(logits[keep], probabilities.argmax(-1)[keep]), count
-
-
-def entropy_loss(logits):
-    validate(logits)
-    logp = F.log_softmax(logits, -1)
-    return -(logp.exp() * logp).sum(-1).mean()
-
-
-def configure_tent(model):
-    model.eval()
-    model.requires_grad_(False)
-    for module in model.modules():
-        if isinstance(module, nn.modules.batchnorm._BatchNorm):
-            module.train(True)
-            module.track_running_stats = False
-            module.running_mean = None
-            module.running_var = None
-        if isinstance(module, (nn.modules.batchnorm._BatchNorm, nn.LayerNorm)):
-            for name, parameter in module.named_parameters(recurse=False):
-                if name in ("weight", "bias"):
-                    parameter.requires_grad_(True)
-    selected = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
-    if not selected or len({id(p) for _, p in selected}) != len(selected):
-        raise ValueError("invalid Tent affine parameter set")
-    return [p for _, p in selected], [n for n, _ in selected]

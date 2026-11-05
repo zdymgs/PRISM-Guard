@@ -22,7 +22,6 @@ Source: paper Table 3(a).
 |---|---:|---:|---:|
 | From Direct | 75.0 | 87.8 | 94.6 |
 | C0 (no adaptation) | 54.9 | 89.3 | 94.4 |
-| Tent | 38.1 | — | — |
 | Confidence PL | 64.6 | 83.4 | 94.7 |
 | KD-soft | 74.7 | 87.4 | 94.7 |
 | PRISM-D | **79.9** | **99.0** | 94.0 |

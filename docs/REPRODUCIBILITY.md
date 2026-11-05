@@ -45,14 +45,12 @@ The supplementary material of the paper refers to these keys.
 | KD-soft target and loss | `configs/baselines/kd_soft.yaml`: `target`, `loss` | `DIRECT_content_teacher_soft_posterior`; `forward_KL_no_smoothing` |
 | KD-soft precision | `configs/baselines/kd_soft.yaml`: `cuhkx_precision`, `other_precision` | `AMP_float16`; `float32` |
 | Confidence PL threshold | `configs/baselines/conf_pl.yaml`: `confidence_threshold` | 0.9 |
-| Tent optimizer, learning rate and epochs | `configs/baselines/tent.yaml`: `optimizer`, `learning_rate`, `epochs` | Adam; 0.001; 1 |
-| Tent micro batch and logical batch | `configs/baselines/tent.yaml`: `micro_batch`, `logical_accumulation_batch` | 4; 64 |
 | bootstrap_repetitions | `configs/{cuhkx,mmact,mmfit}.yaml`: `bootstrap_repetitions` | 2000 |
 | bootstrap_seed | `configs/{cuhkx,mmact,mmfit}.yaml`: `bootstrap_seed` | 20261015 |
 
 ## Commands
 
-The [home page](../README.md#usage) provides the target, distillation and evaluation commands. Source student stages and the KD-soft, confidence PL and Tent interfaces are documented beside their code. Teacher commands support an explicit local workspace, data root, pretrained root and external backbone root.
+The [home page](../README.md#usage) provides the target, distillation and evaluation commands. Source student stages and the KD-soft and confidence PL interfaces are documented beside their code. Teacher commands support an explicit local workspace, data root, pretrained root and external backbone root.
 
 ## Challenge inference
 

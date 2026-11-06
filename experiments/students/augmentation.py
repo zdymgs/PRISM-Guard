@@ -40,3 +40,39 @@ def augment_rgb(images: torch.Tensor) -> torch.Tensor:
     contrast = torch.empty((batch, 1, 1, 1, 1, 1, 1), device=value.device).uniform_(0.9, 1.1)
     mean = value.mean(dim=(-1, -2), keepdim=True)
     return ((value - mean) * contrast + mean).mul(brightness).clamp(0, 1)
+
+
+def strong_augment(batch):
+    result = dict(batch)
+    sequence = batch['backbone_sequence']
+    batch_size, steps = len(sequence), sequence.shape[-2]
+    ranks = torch.rand(batch_size, steps, device=sequence.device).argsort(-1)
+    time_keep = torch.ones(batch_size, steps, dtype=torch.bool, device=sequence.device)
+    time_keep.scatter_(1, ranks[:, :int(steps * .25)], False)
+    result['backbone_sequence'] = F.dropout(
+        sequence * time_keep[:, None, None, :, None], p=.2, training=True)
+    groups = (
+        ('skeleton_features', 'skeleton_feature_mask'),
+        ('skeleton_relations', 'skeleton_relation_mask'),
+        ('imu_sequences', 'imu_sequence_mask'),
+        ('imu_bin_statistics', None),
+        ('imu_global_statistics', None),
+    )
+    for field, mask_field in groups:
+        value = batch[field]
+        temporal = value.ndim >= 4 and value.shape[2] == steps
+        deviation = value.std(dim=2 if temporal else 1, keepdim=True, unbiased=False)
+        scale = torch.empty((batch_size,) + (1,) * (value.ndim - 1),
+                            device=value.device).uniform_(.8, 1.2)
+        augmented = (value + torch.randn_like(value) * deviation * .05) * scale
+        if temporal:
+            keep = torch.rand((batch_size, 1, steps) + (1,) * (value.ndim - 3),
+                              device=value.device) >= .1
+            augmented = augmented * keep
+        if mask_field is not None:
+            mask = batch[mask_field]
+            while mask.ndim < value.ndim:
+                mask = mask.unsqueeze(-1)
+            augmented = augmented * mask
+        result[field] = augmented
+    return result

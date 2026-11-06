@@ -4,10 +4,12 @@ import csv, json, math, random, time
 from pathlib import Path
 import numpy as np
 import torch
-from torch.utils.data import Dataset
-from prism.baselines.objectives import kd_soft_loss, pl_conf_loss
+from torch.utils.data import Dataset, DataLoader
+from torch.nn import functional as F
+from prism.baselines.objectives import kd_soft_loss, pl_conf_loss, fixmatch_loss
+from experiments.students.augmentation import strong_augment
 from experiments.students.runtime import Context, sha, write, seed_all, CLASSES, SEEDS, require_cuda
-from experiments.students.cache import aligned_values, read_json
+from experiments.students.cache import TensorCache, aligned_values, read_json
 
 class IndexedDataset(Dataset):
     def __init__(self, base): self.base = base
@@ -55,11 +57,13 @@ def infer(ctx, amp=False):
 
 def run(args, *, distill=False):
     name = args.dataset
-    arm = {'kd-soft': 'kd_soft', 'confidence-pl': 'pl_conf'}.get(args.method, 'kd_soft')
+    arm = {'kd-soft': 'kd_soft', 'confidence-pl': 'pl_conf', 'fixmatch': 'fixmatch'}.get(args.method, 'kd_soft')
     require_cuda(args)
     cfg = read_json(args.inputs)
     key = 'targets' if distill else 'direct_probability'
-    probability = aligned_values(args.targets, [str(s) for s in cfg['record_id']], key=key, classes=CLASSES[name])
+    probability = (np.full((len(cfg['record_id']), CLASSES[name]), 1 / CLASSES[name], np.float32)
+                   if arm == 'fixmatch' else
+                   aligned_values(args.targets, [str(s) for s in cfg['record_id']], key=key, classes=CLASSES[name]))
     seed = args.seed if args.seed is not None else SEEDS[name]
     info = dict(rows=len(probability), classes=CLASSES[name], seed=seed)
     arrays = dict(probabilities=probability, ids=np.asarray(cfg['record_id']),
@@ -71,11 +75,15 @@ def run(args, *, distill=False):
     contract = dict(dataset=name, method='prism-d' if distill else args.method,
         epochs=args.epochs, batch_size=64, seed=seed,
         precision='AMP float16' if name=='cuhkx' else 'float32',
-        c0_sha256=sha(args.c0), input_sha256=sha(args.inputs), target_sha256=sha(args.targets),
+        c0_sha256=sha(args.c0), input_sha256=sha(args.inputs), target_sha256=None if arm=='fixmatch' else sha(args.targets),
         optimizer='AdamW',
         motion_fusion_lr=1e-4,
         visual_head_lr=5e-5, minimum_lr=5e-6,
-        confidence_threshold=0.9 if arm=='pl_conf' else None)
+        confidence_threshold=.95 if arm=='fixmatch' else .9 if arm=='pl_conf' else None)
+    if arm == 'fixmatch':
+        contract.update(mu=1, lambda_u=1., source_inputs_sha256=sha(args.source_inputs),
+                        source_labels_sha256=sha(args.source_labels),
+                        augmentation='cached feature time mask25% + dropout0.2; motion jitter/scale/time mask')
     write(out/'config.json', contract)
     torch.set_num_threads(4 if name=='mmfit' else 2)
     seed_all(seed)
@@ -84,6 +92,13 @@ def run(args, *, distill=False):
     if device.type=='cuda': torch.cuda.reset_peak_memory_stats()
     ctx=Context(args, probability)
     model=ctx.model
+    if arm == 'fixmatch':
+        source_cfg = read_json(args.source_inputs)
+        source_y = aligned_values(args.source_labels, [str(s) for s in source_cfg['record_id']],
+                                  key='label', classes=CLASSES[name])
+        source_dataset = TensorCache(args.source_inputs, cache_root=args.cache_root,
+                                    source_labels=source_y, source=True, fold=args.fold,
+                                    augment=name == 'cuhkx')
     resource_probe=False
     # CUHK's existing trainer resets the RNG immediately before adaptation.
     if name == 'cuhkx':
@@ -117,9 +132,30 @@ def run(args, *, distill=False):
         loss_sum = 0.0
         participants = seen = skipped = steps = attempted_steps = amp_skips = nonfinite_norms = 0
         lrs = [g['lr'] for g in optimizer.param_groups]
+        accepted = 0
+        if arm == 'fixmatch':
+            source_loader = DataLoader(source_dataset, batch_size=64, shuffle=True, drop_last=True,
+                generator=torch.Generator().manual_seed(seed + epoch))
+            source_iterator = iter(source_loader)
         for batch_index, batch in enumerate(data_loader(ctx, True, epoch)):
             row = positions(ctx, batch)
             assert not {'label', 'labels', 'class_id', 'truth'} & set(batch)
+            if arm == 'fixmatch':
+                try:
+                    source = next(source_iterator)
+                except StopIteration:
+                    source_iterator = iter(source_loader)
+                    source = next(source_iterator)
+                value, kept, amp_skipped = fixmatch_step(ctx, source, batch, optimizer, scaler, parameters, amp)
+                seen += len(row)
+                participants += len(row)
+                loss_sum += value * len(row)
+                accepted += kept
+                attempted_steps += 1
+                amp_skips += int(amp_skipped)
+                steps += int(not amp_skipped)
+                updates += int(not amp_skipped)
+                continue
             b = ctx.move(batch)
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast('cuda', dtype=torch.float16, enabled=amp):
@@ -168,6 +204,8 @@ def run(args, *, distill=False):
             cumulative_seconds=time.perf_counter()-began,
             peak_allocated_bytes=memory_allocated(),
             seed=info['seed'], evaluation_labels_read=False)
+        if arm == 'fixmatch':
+            record.update(accepted=accepted, accepted_fraction=accepted / seen)
         assert seen == info['rows']
         history.append(record)
         with (out / 'train.jsonl').open('a', encoding='utf-8') as handle:
@@ -191,5 +229,34 @@ def run(args, *, distill=False):
         peak_allocated_bytes=memory_allocated(), peak_reserved_bytes=memory_reserved(),
         target_agreement=float(np.mean(pred==arrays['direct_target'])),
         source_labels_read=False)
+    if arm == 'fixmatch':
+        summary.update(source_labels_read=True, evaluation_labels_read=False, target_agreement=None,
+                       accepted_fraction_last_epoch=history[-1]['accepted_fraction'])
     write(out/'summary.json', summary)
     return summary
+
+
+def fixmatch_step(ctx, source, batch, optimizer, scaler, parameters, amp):
+    labels = source.pop('label').to(ctx.device)
+    supervised_batch, weak = ctx.move(source), ctx.move(batch)
+    optimizer.zero_grad(set_to_none=True)
+    with torch.autocast('cuda', dtype=torch.float16, enabled=amp):
+        supervised = F.cross_entropy(ctx.forward(supervised_batch).float(), labels)
+    scaler.scale(supervised).backward()
+    with torch.no_grad(), torch.autocast('cuda', dtype=torch.float16, enabled=amp):
+        weak_logits = ctx.forward(weak).float()
+    strong = strong_augment(weak)
+    with torch.autocast('cuda', dtype=torch.float16, enabled=amp):
+        unsupervised, kept = fixmatch_loss(ctx.forward(strong).float(), weak_logits)
+    scaler.scale(unsupervised).backward()
+    value = float(supervised.detach()) + float(unsupervised.detach())
+    if not math.isfinite(value):
+        raise FloatingPointError('nonfinite FixMatch loss')
+    scaler.unscale_(optimizer)
+    norm = torch.nn.utils.clip_grad_norm_(parameters, 1.)
+    if not amp and not torch.isfinite(norm):
+        raise FloatingPointError('nonfinite FixMatch gradient')
+    before = scaler.get_scale()
+    scaler.step(optimizer)
+    scaler.update()
+    return value, kept, bool(amp and scaler.get_scale() < before)

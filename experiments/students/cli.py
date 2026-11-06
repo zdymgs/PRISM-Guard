@@ -13,7 +13,7 @@ def parser(description, *, baseline=False):
                "Default seeds: CUHK-X 20260826, MMAct 20260922, MM-Fit 20260927.")
     p.add_argument("--dataset", choices=("cuhkx", "mmact", "mmfit"), required=True)
     p.add_argument("--inputs", type=Path, required=True, help="prism.student.v1 tensor manifest")
-    p.add_argument("--targets", type=Path, required=True,
+    p.add_argument("--targets", type=Path, required=not baseline,
                    help="record_id + direct_probability JSON" if baseline else
                         "record_id + targets JSON emitted by scripts/build_targets.py")
     p.add_argument("--c0", type=Path, required=True, help="local common source checkpoint")
@@ -27,7 +27,9 @@ def parser(description, *, baseline=False):
     p.add_argument("--epochs", type=int, default=40, help="adaptation epochs")
     p.add_argument("--device", default="cuda", help="PyTorch device")
     if baseline:
-        p.add_argument("--method", choices=("kd-soft", "confidence-pl"), required=True)
+        p.add_argument("--method", choices=("kd-soft", "confidence-pl", "fixmatch"), required=True)
+        p.add_argument("--source-inputs", type=Path, help="source-only tensor manifest for FixMatch")
+        p.add_argument("--source-labels", type=Path, help="record_id + label JSON for FixMatch")
     else:
         p.set_defaults(method="prism-d")
     return p
@@ -36,6 +38,11 @@ def parser(description, *, baseline=False):
 def main(argv=None, *, baseline=False):
     args = parser("Run the paper's native student baseline." if baseline else
                   "Distill PRISM targets into the full native student.", baseline=baseline).parse_args(argv)
+    if args.method == "fixmatch":
+        if args.source_inputs is None or args.source_labels is None:
+            raise ValueError("FixMatch requires --source-inputs and --source-labels")
+    elif args.targets is None:
+        raise ValueError("this method requires --targets")
     if args.epochs <= 0:
         raise ValueError("epochs must be positive")
     if args.dataset == "cuhkx" and args.fold is None:

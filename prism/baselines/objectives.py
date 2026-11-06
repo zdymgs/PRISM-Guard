@@ -31,3 +31,11 @@ def pl_conf_loss(logits, probabilities, threshold=0.9):
     if not count:
         return None, 0
     return F.cross_entropy(logits[keep], probabilities.argmax(-1)[keep]), count
+
+
+def fixmatch_loss(strong_logits, weak_logits):
+    probability = weak_logits.detach().float().softmax(-1)
+    confidence, pseudo = probability.max(-1)
+    mask = confidence >= 0.95
+    per = F.cross_entropy(strong_logits.float(), pseudo, reduction='none')
+    return (per * mask).mean(), int(mask.sum())

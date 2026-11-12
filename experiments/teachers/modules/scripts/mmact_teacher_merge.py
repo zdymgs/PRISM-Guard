@@ -59,7 +59,7 @@ def main():
     if len(base_names) != 12 or len(set(base_names + extra_names)) != 15:
         raise ValueError('expert identities invalid')
     value_binding = {'base': verify_base_oof_values(a.base, base_manifest, base), 'extra': verify_extra_bank_values(a.extra, extra_manifest, extra)}
-    for split, n in (('source', 3243), ('validation', 1080), ('target', 1083)):
+    for split, n in (('source', 3209), ('validation', 1081), ('target', 1116)):
         validate_identity(base[f'{split}_indices'], base[f'{split}_interval_ids'], f'base {split}')
         validate_identity(extra[f'{split}_indices'], extra[f'{split}_interval_ids'], f'extra {split}')
         if len(base[f'{split}_indices']) != n:
@@ -79,7 +79,7 @@ def main():
     if len(oof) != 45 or len(final) != 3:
         raise AssertionError('logical receipt cardinality mismatch')
     if a.preflight_only:
-        print(json.dumps({'status': 'preflight_complete', 'would_merge_shape': [3243, 15, 37], 'logical_oof_receipts': 45, 'logical_final_source_receipts': 3}, indent=2))
+        print(json.dumps({'status': 'preflight_complete', 'would_merge_shape': [3209, 15, 37], 'logical_oof_receipts': 45, 'logical_final_source_receipts': 3}, indent=2))
         return
     if a.output.exists():
         raise FileExistsError('output must be new')
@@ -93,7 +93,7 @@ def main():
     for key in ('source_labels', 'source_folds', 'validation_labels'):
         arrays[key] = base[key]
     arrays['expert_names'] = np.asarray(base_names + extra_names)
-    for split, n in (('source', 3243), ('validation', 1080), ('target', 1083)):
+    for split, n in (('source', 3209), ('validation', 1081), ('target', 1116)):
         if arrays[f'{split}_probabilities'].shape != (n, 15, 37) or arrays[f'{split}_availability'].shape != (n, 15):
             raise AssertionError('merged exact 15-expert dimensions invalid')
     bank = a.output / 'teacher_bank.npz'

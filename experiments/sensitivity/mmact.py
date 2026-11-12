@@ -160,17 +160,17 @@ def main():
     del labels
     policy = json.loads((baseline / 'selection.json').read_text(encoding='utf-8'))
     print(f'复现：Direct={direct_score:.4f}，PRISM={prism_score:.4f}，路径={DISPLAY_PATH[policy["selected_path"]]}', flush=True)
-    if (round(direct_score, 1) != 87.8 or round(prism_score, 1) != 99.0
+    if (round(direct_score, 1) != 88.5 or round(prism_score, 1) != 99.9
             or policy['selected_path'] != 'direct_sequence_gated'):
         raise SystemExit('复现未通过，按提示词停止。')
     elapsed = time.perf_counter() - reproduction_started
     print(f'预计总耗时约 {elapsed * 8 / 60:.2f} 分钟', flush=True)
     grid = [('transition_lambda', v) for v in (0.15, 0.30, 0.45, 0.60, 0.75)]
-    grid += [('transition_smoothing', v) for v in (0.25, 0.5, 2.0)]
+    grid += [('transition_smoothing', v) for v in (0.25, 0.5, 2.0, 4.0)]
     directories = {}
     for key, value in grid:
         directories[(key, value)] = baseline if (key, value) == ('transition_lambda', 0.45) else construct(splits, key, value)
-    print('全部 8 个配置预测、路径和阈值已写盘；开始读取 F0 标签评测。', flush=True)
+    print('全部 9 个配置预测、路径和阈值已写盘；开始读取 F0 标签评测。', flush=True)
     labels = read_evaluation_labels(splits['target']['ids'], splits['target']['indices'])
     with np.load(baseline / 'predictions.npz', allow_pickle=False) as z:
         reference = z['target_label']
@@ -183,7 +183,7 @@ def main():
         predictions[(key, value)] = prediction
         policy = json.loads((directory / 'selection.json').read_text(encoding='utf-8'))
         score = 100 * _score(labels, prediction)['macro_f1_fixed37']
-        rows.append(dict(parameter=key, value=value, macro_f1=score, delta_vs_direct=score - 87.8,
+        rows.append(dict(parameter=key, value=value, macro_f1=score, delta_vs_direct=score - direct_score,
                          path=DISPLAY_PATH[policy['selected_path']],
                          changed_intervals=int(np.sum(prediction != reference))))
     with (ROOT / 'results_mmact.csv').open('w', encoding='utf-8-sig', newline='') as handle:
@@ -192,8 +192,8 @@ def main():
         writer.writerows(rows)
     lines = ['# MMAct 解码超参数敏感性（F0）', '',
              '37 类 macro-F1，缺席类计 0；F1 重新选择门控和路径。分数与差值单位为百分点。最终配置仅运行一次。', '',
-             f'最终配置复现：Direct {direct_score:.4f}（87.8），PRISM {prism_score:.4f}（99.0），路径 D→S。', '',
-             '| 常数 | 取值 | macro-F1 | Δ vs Direct (87.8) | 路径 | 变化的区间数 |',
+             f'最终配置复现：Direct {direct_score:.4f}（88.5），PRISM {prism_score:.4f}（99.9），路径 D→S。', '',
+             '| 常数 | 取值 | macro-F1 | Δ vs Direct | 路径 | 变化的区间数 |',
              '|---|---:|---:|---:|---|---:|']
     for row in rows:
         marker = '*' if row['parameter'] == 'transition_lambda' and row['value'] == 0.45 else ''

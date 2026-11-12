@@ -1,18 +1,20 @@
-# Macro-F1 percentages from paper Table 2. CUHK-X pools all three outer folds.
+# Macro-F1 percentages from paper Table IV. CUHK-X pools all three outer folds.
 targets:
   cuhkx:
     direct: 75.0
     equal_mean: 72.1
     direct_viterbi_naive: 76.7
     online_forward: 77.4
-    selected: 80.0
+    selected: 79.9
   mmact:
-    direct: 87.8
-    direct_sequence_nogate: 99.0
-    online_forward: 99.0
-    selected: 99.0
+    direct: 88.5
+    equal_mean: 88.6
+    direct_sequence_nogate: 99.9
+    online_forward: 99.9
+    selected: 99.9
   mmfit:
     direct: 94.6
+    equal_mean: 94.4
     direct_sequence_nogate: 94.0
     online_forward: 50.5
     selected: 94.0
@@ -22,16 +24,19 @@ students:
     c0: 54.9
     conf_pl: 64.6
     kd_soft: 74.7
+    fixmatch: 51.7
     selected: 79.9
   mmact:
-    direct: 87.8
-    c0: 89.3
-    conf_pl: 83.4
-    kd_soft: 87.4
-    selected: 99.0
+    direct: 88.5
+    c0: 87.5
+    conf_pl: 83.3
+    kd_soft: 88.6
+    fixmatch: 89.5
+    selected: 99.9
   mmfit:
     direct: 94.6
     c0: 94.4
     conf_pl: 94.7
     kd_soft: 94.7
+    fixmatch: 92.0
     selected: 94.0

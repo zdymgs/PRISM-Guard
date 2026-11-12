@@ -19,7 +19,8 @@ def subject_fold(subject: str) -> str:
     match = re.fullmatch('subject(\\d+)', subject.lower())
     if not match:
         raise ValueError(f'invalid MMACT subject: {subject}')
-    return f'F{(int(match.group(1)) - 1) % 5}'
+    subject_id = int(match.group(1))
+    return 'F0' if 17 <= subject_id <= 20 else f'F{subject_id % 4 + 1}'
 
 def fixed_macro_f1(y: np.ndarray, pred: np.ndarray, classes: int) -> float:
     scores = []

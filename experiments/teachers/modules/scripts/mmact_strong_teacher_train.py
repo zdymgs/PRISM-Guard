@@ -84,7 +84,7 @@ def main():
     val = np.flatnonzero(folds == 'F1')
     test = np.flatnonzero(folds == 'F0')
     y = np.asarray([label_to_id[r['label']] if folds[i] != 'F0' else -1 for i, r in enumerate(intervals)])
-    if (len(train), len(val), len(test)) != (3243, 1080, 1083) or np.any(y[test] != -1):
+    if (len(train), len(val), len(test)) != (3209, 1081, 1116) or np.any(y[test] != -1):
         raise ValueError('split firewall failed')
     video, view_masks = load_video(a.cache, len(intervals))
     imu, imu_mask = load_imu(a.legacy, intervals, label_to_id)

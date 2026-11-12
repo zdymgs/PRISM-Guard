@@ -69,7 +69,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     source_indices = np.flatnonzero(np.isin(folds, SOURCE_FOLDS))
     validation_indices = np.flatnonzero(folds == VALIDATION_FOLD)
     target_indices = np.flatnonzero(folds == SEALED_FOLD)
-    if tuple(map(len, (source_indices, validation_indices, target_indices))) != (3243, 1080, 1083):
+    if tuple(map(len, (source_indices, validation_indices, target_indices))) != (3209, 1081, 1116):
         raise ValueError('canonical split sizes changed')
     if np.any(labels[source_indices] < 0) or np.any(labels[validation_indices] < 0) or np.any(labels[target_indices] != -1):
         raise ValueError('label firewall failed')

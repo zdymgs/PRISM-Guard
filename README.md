@@ -1,17 +1,17 @@
 # PRISM-Guard
 
-Code for **Use the Protocol Offline, Not at Deployment: Data-Collection Protocols as Relational Privileged Information for Compact Multimodal Activity Recognition**.
+Code for **Offline Label Correction with Cross-Clip Relations for Compact Multimodal Activity Recognition**.
 
-**Under review at IEEE Transactions on Mobile Computing.**
+**Submitted to the IEEE Internet of Things Journal.**
 
-PRISM-Guard turns data-collection protocols into offline supervision: it aligns repeated sessions, decodes each session under its script, and gates proposed changes. PRISM-Guard-D distills these targets into a compact multimodal recognizer that classifies each clip using only its local sensor inputs.
+PRISM-Guard (Peer- and Routine-Informed Supervision for compact Models) corrects training labels offline with cross-clip relations: it compares repeated rounds of the same routine, decodes each session under its routine and gates proposed changes. PRISM-Guard-D distills these targets into a compact multimodal recognizer that classifies each clip using only its local sensor inputs.
 
 ![PRISM-Guard workflow](docs/workflow.svg)
 
 ## Highlights
 
-- PRISM-Guard-D improves macro-F1 over the student distilled from Direct targets by **+4.9** on CUHK-X and **+11.2** on MMAct (paper Table 3).
-- CUHK-X Challenge Small Model Track **Finalist Award**, **11th on the private leaderboard (top 15)**.
+- PRISM-Guard-D improves macro-F1 over the student distilled from Direct targets by **+4.9** on CUHK-X and **+11.4** on MMAct (paper Table IV).
+- CUHK-X Challenge Small Model Track **Finalist Award**, **11th of 326 teams on the private leaderboard**.
 - Passed the organizers' independent reproduction and verification; presented a poster at the CUHK-X Challenge Grand Finals at **UbiComp/ISWC 2026**.
 - Challenge deployment model: **56.49 MB**, within the **100 MB** limit.
 - Challenge team: **砸锅卖铁去比赛**.
@@ -75,7 +75,7 @@ Prepare source and target expert banks using [the teacher code](experiments/teac
 python scripts/build_targets.py --config configs/cuhkx.yaml --path auto --cache-root ../private-cache/cuhkx/fold0 --output-root ../prism-output/cuhkx/fold0
 ```
 
-Use `configs/mmact.yaml` or `configs/mmfit.yaml` for the other datasets. Those protocols also consume a separate `selection.json`. Source/selection labels fit the stacker, transitions and gates; target labels are reserved for evaluation.
+Use `configs/mmact.yaml` or `configs/mmfit.yaml` for the other datasets. Those protocols also consume a separate `selection.json`. Source/selection labels fit the stacker, transitions and gates; target labels are reserved for evaluation. MMAct uses the official cross-subject split: subjects 17–20 for evaluation, subjects 4, 8, 12 and 16 for selection and the remaining subjects for fitting.
 
 ### 2. Distill PRISM-Guard-D
 
@@ -107,18 +107,18 @@ These scripts generate Figures 3–7 from your local predictions and aggregate m
 
 ## Main results
 
-Macro-F1 (%), paper Table 3:
+Macro-F1 (%), paper Table IV:
 
 | Level | Method | CUHK-X | MMAct | MM-Fit |
 |---|---|---:|---:|---:|
-| Teacher | Direct | 75.0 | 87.8 | 94.6 |
-| Teacher | PRISM-Guard | **80.0** | **99.0** | 94.0 |
-| Student | From Direct | 75.0 | 87.8 | 94.6 |
-| Student | PRISM-Guard-D | **79.9** | **99.0** | 94.0 |
+| Teacher | Direct | 75.0 | 88.5 | 94.6 |
+| Teacher | PRISM-Guard | **79.9** | **99.9** | 94.0 |
+| Student | From Direct | 75.0 | 88.5 | 94.6 |
+| Student | PRISM-Guard-D | **79.9** | **99.9** | 94.0 |
 
 On MM-Fit, where the clip-level estimate is already saturated, the gate keeps relational targets within 0.6 points of the baseline.
 
-[RESULTS.md](RESULTS.md) contains the full Table 3 comparison, CUHK-X fold gains from Figure 3, and computational cost from Table 5.
+[RESULTS.md](RESULTS.md) contains the full Table IV comparison, CUHK-X fold gains from Figure 3, and decoder sensitivity from Table V and computational cost from Table VI.
 
 ## Competition
 
@@ -129,8 +129,8 @@ On MM-Fit, where the clip-level estimate is already saturated, the gate keeps re
 ```bibtex
 @misc{prism,
   author = {The PRISM-Guard Authors},
-  title = {Use the Protocol Offline, Not at Deployment: Data-Collection Protocols as Relational Privileged Information for Compact Multimodal Activity Recognition},
-  note = {Under review at IEEE Transactions on Mobile Computing}
+  title = {Offline Label Correction with Cross-Clip Relations for Compact Multimodal Activity Recognition},
+  note = {Submitted to the IEEE Internet of Things Journal}
 }
 ```
 

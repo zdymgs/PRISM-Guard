@@ -26,8 +26,8 @@ def main():
         raise ValueError('full cache audit required')
     manifest_path = args.input_manifest
     rows = json.loads(manifest_path.read_text(encoding='utf-8'))['rows_manifest']
-    train = np.asarray([i for i, r in enumerate(rows) if (int(r['subject'][7:]) - 1) % 5 in (2, 3, 4)], np.int64)
-    if len(train) != 3243:
+    train = np.asarray([i for i, r in enumerate(rows) if int(r['subject'][7:]) <= 16 and int(r['subject'][7:]) % 4 != 0], np.int64)
+    if len(train) != 3209:
         raise ValueError('source count mismatch')
     values = np.empty((len(train), 2, 16, 5, 4, 6), np.float32)
     masks = np.empty(values.shape, bool)

@@ -146,7 +146,7 @@ def compile(bank_path, geometry_path, input_manifest, merged_manifest, base_sele
     input_data = json.loads(Path(input_manifest).read_text())
     base = json.loads(Path(base_selection).read_text())['selection']
     splits = {}
-    for split, n in zip(('source', 'validation', 'target'), (3243, 1080, 1083)):
+    for split, n in zip(('source', 'validation', 'target'), (3209, 1081, 1116)):
         p, m = _prob(bank[split + '_probabilities'], bank[split + '_availability'], split)
         if p.shape != (n, 15, 37):
             raise ValueError('V2 bank shape invalid')
@@ -165,7 +165,7 @@ def compile(bank_path, geometry_path, input_manifest, merged_manifest, base_sele
             raise ValueError('split subject folds invalid')
     labels = bank['source_labels'].astype(int)
     vlabels = bank['validation_labels'].astype(int)
-    if labels.shape != (3243,) or vlabels.shape != (1080,) or np.any((labels < 0) | (labels >= 37)) or np.any((vlabels < 0) | (vlabels >= 37)):
+    if labels.shape != (3209,) or vlabels.shape != (1081,) or np.any((labels < 0) | (labels >= 37)) or np.any((vlabels < 0) | (vlabels >= 37)):
         raise ValueError('source/validation labels invalid')
     dc = direct_candidates(splits['validation']['bank'], splits['validation']['mask'], names, base)
     direct_choice, direct_records = select_direct(dc, vlabels)
@@ -182,10 +182,10 @@ def compile(bank_path, geometry_path, input_manifest, merged_manifest, base_sele
         s['peer_ids'] = peer_ids
         s['features'] = build_group_features(s['bank'], s['direct'].argmax(1), peers, expert_mask=s['mask'])
     joint = np.concatenate((splits['source']['features'], splits['validation']['features']))
-    joint_y = np.r_[labels, np.full(1080, -1)]
+    joint_y = np.r_[labels, np.full(1081, -1)]
     joint_ids = np.r_[splits['source']['ids'], splits['validation']['ids']]
     with threadpool_limits(limits=threads):
-        head = fit_group_head(joint, joint_y, joint_ids, fit_indices=np.arange(3243), holdout_indices=np.arange(3243, 4323), expert_names=names, class_count=37, posterior_provenance='source_oof', regularization_c=0.03)
+        head = fit_group_head(joint, joint_y, joint_ids, fit_indices=np.arange(3209), holdout_indices=np.arange(3209, 4290), expert_names=names, class_count=37, posterior_provenance='source_oof', regularization_c=0.03)
         groups = {k: head.predict_proba(v['features']) for k, v in splits.items()}
     sm = splits['source']['meta']
     transition = fit_source_transition(subject_ids=sm['subject'], scene_ids=sm['scene'], session_ids=sm['session'], starts=sm['start_ms'], ends=sm['end_ms'], interval_ids=sm['interval_id'], labels=labels, num_classes=37, annotation_ordinals=sm['ordinal'])

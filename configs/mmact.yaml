@@ -32,14 +32,12 @@ skip_penalty: 0.20
 peer_weight: 0.25
 path_mix: 0.51
 
-# Frozen source/selection mixture in the original 15-slot bank order.
+# Source/selection mixture reselected on the official F1 split, in the 15-slot bank order.
 # Consumed by prism/_chains/mmact.py; weights retain this selected-slot order.
-direct_expert_indices: [9, 11, 5, 2, 12, 13, 14]
+direct_expert_indices: [10, 11, 12, 13, 14]
 direct_expert_weights:
-- 0.196875
-- 0.196875
-- 0.13124999999999998
-- 0.175
+- 0.35
+- 0.35
 - 0.09999999999999999
 - 0.09999999999999999
 - 0.09999999999999999
